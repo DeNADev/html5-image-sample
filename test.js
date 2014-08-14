@@ -865,7 +865,7 @@ test.Loader.prototype.sendRequest_ = function(url) {
 
 /** @override */
 test.Loader.prototype.handleOpen = function(status) {
-  /// <param type="string" name="table"/>
+  /// <param type="boolean" name="status"/>
   if (!status) {
     this.sendRequest_(this.url_);
   } else {
@@ -875,7 +875,7 @@ test.Loader.prototype.handleOpen = function(status) {
 
 /** @override */
 test.Loader.prototype.handleGet = function(status, data) {
-  /// <param type="string" name="key"/>
+  /// <param type="boolean" name="status"/>
   /// <param type="string" name="data"/>
   if (data.length == 0) {
     this.sendRequest_(this.url_);
@@ -886,7 +886,7 @@ test.Loader.prototype.handleGet = function(status, data) {
 
 /** @override */
 test.Loader.prototype.handlePut = function(status) {
-  /// <param type="string" name="key"/>
+  /// <param type="boolean" name="status"/>
 };
 
 /** @override */
