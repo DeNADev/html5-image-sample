@@ -731,13 +731,16 @@ test.Loader.IndexedDatabaseCache.handleGet_ = function(event) {
 
 /**
  * Retrieves the table used by this object.
+ * @param {string} mode
  * @return {IDBObjectStore}
  * @private
  */
-test.Loader.IndexedDatabaseCache.prototype.getObjectStore_ = function() {
+test.Loader.IndexedDatabaseCache.prototype.getObjectStore_ = function(mode) {
+  /// <param type="string" name="mode"/>
+  /// <returns type="IDBObjectStore"/>
   test.assert(!!test.Loader.IndexedDatabaseCache.database_);
   var database = test.Loader.IndexedDatabaseCache.database_;
-  var transaction = database.transaction(['Cache'], 'readwrite');
+  var transaction = database.transaction(['Cache'], mode);
   return transaction.objectStore('Cache');
 };
 
@@ -764,7 +767,7 @@ test.Loader.IndexedDatabaseCache.prototype.open = function(listener) {
 /** @override */
 test.Loader.IndexedDatabaseCache.prototype.put =
     function(listener, key, value) {
-  var request = this.getObjectStore_().put(value, key);
+  var request = this.getObjectStore_('readwrite').put(value, key);
   request.listener = listener;
   request.onerror = test.Loader.IndexedDatabaseCache.handlePut_;
   request.onsuccess = test.Loader.IndexedDatabaseCache.handlePut_;
@@ -772,7 +775,7 @@ test.Loader.IndexedDatabaseCache.prototype.put =
 
 /** @override */
 test.Loader.IndexedDatabaseCache.prototype.get = function(listener, key) {
-  var request = this.getObjectStore_().get(key);
+  var request = this.getObjectStore_('readonly').get(key);
   request.listener = listener;
   request.onerror = test.Loader.IndexedDatabaseCache.handleGet_;
   request.onsuccess = test.Loader.IndexedDatabaseCache.handleGet_;
