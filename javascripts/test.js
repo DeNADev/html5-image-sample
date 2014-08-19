@@ -404,9 +404,8 @@ test.Image.prototype.handleBrowserEvent = function(element, type, event) {
 test.Image.prototype.setSource = function(source) {
   /// <param type="string" name="source"/>
   this.source_ = source;
-  this.width_ = 256;
-  this.height_ = 256;
-  this.compose_(this.red_, this.green_, this.blue_, this.blur_);
+  this.get().src = source;
+  this.listen('load', true);
 };
 
 /**
