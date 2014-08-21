@@ -29,27 +29,34 @@ THE SOFTWARE.
 <title>Cache Demo</title>
 <script type="text/javascript" src="test.js"></script>
 <script type="text/javascript">
+/**
+ * Loads the image selected in the <select> element.
+ */
 function loadImage() {
   var url = document.getElementById('url').value;
   test.Application.load(url);
 };
 
+/**
+ * Called when a browser finishes loading this HTML page. This method
+ * initializes the test application and starts loading a sample image.
+ */
 window.onload = function() {
   test.Application.start('input', 'output', 'red', 'green', 'blue', 'blur');
-  var url = 'HTML5_Logo_256.png';
-  test.Application.load(url);
-  document.getElementById('url').value = url;
+  loadImage();
 };
 </script>
 </head>
 <body>
-  <label for="input">Image:</label>
+  <label for="input">Input:</label>
   <img id="input"/>
-  <label for="canvas">Canvas:</label>
-  <canvas id="output" width="256" height="256"></canvas>
+  <label for="output">Output:</label>
+  <img id="output"/>
   <br/>
   <label for="blur">URL:</label>
-  <input id="url" type="url" value="" size="64"/>
+  <select id="url">
+    <option value="HTML5_Logo_256.png">HTML5_Logo_256</option>
+  </select>
   <input id="button" type="button" value="load" onclick="loadImage()"/>
   <br/>
   <label for="red">Red:</label>

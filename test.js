@@ -352,10 +352,10 @@ test.Image.EventListener.prototype.handleLoadImage = function(image) {};
  * @private
  */
 test.Image.prototype.compose_ = function(red, green, blue, blur) {
-  /// <param type="numebr" name="red"/>
-  /// <param type="numebr" name="green"/>
-  /// <param type="numebr" name="blue"/>
-  /// <param type="numebr" name="deviation"/>
+  /// <param type="number" name="red"/>
+  /// <param type="number" name="green"/>
+  /// <param type="number" name="blue"/>
+  /// <param type="number" name="deviation"/>
   var svgText =
     '<svg ' +
         'xmlns="http://www.w3.org/2000/svg" ' +
@@ -402,10 +402,27 @@ test.Image.prototype.handleBrowserEvent = function(element, type, event) {
  * @const
  */
 test.Image.prototype.setSource = function(source) {
-  /// <param type="ArrayBuffer" name="data"/>
+  /// <param type="string" name="source"/>
   this.source_ = source;
   this.get().src = this.source_;
   this.listen('load', true);
+};
+
+/**
+ * Copies the specified image to this element.
+ * @param {test.Image} image
+ * @const
+ */
+test.Image.prototype.setImage = function(image) {
+  /// <param type="test.Image" name="image"/>
+  this.source_ = image.source_;
+  this.width_ = image.width_;
+  this.height_ = image.height_;
+  this.red_ = image.red_;
+  this.green_ = image.green_;
+  this.blue_ = image.blue_;
+  this.blur_ = image.blur_;
+  this.compose_(this.red_, this.green_, this.blue_, this.blur_);
 };
 
 /**
@@ -415,7 +432,7 @@ test.Image.prototype.setSource = function(source) {
  * @const
  */
 test.Image.prototype.setRed = function(red) {
-  /// <param type="numebr" name="red"/>
+  /// <param type="number" name="red"/>
   if (this.red_ == red) {
     return false;
   }
@@ -430,7 +447,7 @@ test.Image.prototype.setRed = function(red) {
  * @const
  */
 test.Image.prototype.setGreen = function(green) {
-  /// <param type="numebr" name="green"/>
+  /// <param type="number" name="green"/>
   if (this.green_ == green) {
     return false;
   }
@@ -445,7 +462,7 @@ test.Image.prototype.setGreen = function(green) {
  * @const
  */
 test.Image.prototype.setBlue = function(blue) {
-  /// <param type="numebr" name="blue"/>
+  /// <param type="number" name="blue"/>
   if (this.blue_ == blue) {
     return false;
   }
@@ -460,7 +477,7 @@ test.Image.prototype.setBlue = function(blue) {
  * @const
  */
 test.Image.prototype.setBlur = function(blur) {
-  /// <param type="numebr" name="blue"/>
+  /// <param type="number" name="blue"/>
   if (this.blur_ == blur) {
     return false;
   }
@@ -753,13 +770,23 @@ test.Loader.IndexedDatabaseCache.prototype.isReady = function() {
 test.Loader.IndexedDatabaseCache.prototype.open = function(listener) {
   if (!test.Loader.IndexedDatabaseCache.database_) {
     var request = window.indexedDB.open('Test', 1);
-    if (!request) {
-      return false;
-    }
-    request.listener = listener;
-    request.onerror = test.Loader.IndexedDatabaseCache.handleOpen_;
-    request.onsuccess = test.Loader.IndexedDatabaseCache.handleOpen_;
-    request.onupgradeneeded = test.Loader.IndexedDatabaseCache.handleUpgrade_;
+    request.onerror = function(event) {
+      listener.handleOpen(false);
+    };
+    request.onsuccess = function(event) {
+      var request = /** @type {IDBRequest} */ (event.target);
+      test.Loader.IndexedDatabaseCache.database_ =
+          /** @type {IDBDatabase} */ (request.result);
+      listener.handleOpen(true);
+    };
+    request.onupgradeneeded = function(event) {
+      var request = /** @type {IDBRequest} */ (event.target);
+      var database = /** @type {IDBDatabase} */ (request.result);
+      if (database.objectStoreNames.contains('Cache')) {
+        database.deleteObjectStore('Cache');
+      }
+      database.createObjectStore('Cache');
+    };
   }
   return true;
 };
@@ -936,8 +963,8 @@ test.Loader.prototype.load = function(url) {
 
 /**
  * A class that represents the test application.
- * @param {string} image
- * @param {string} canvas
+ * @param {string} input
+ * @param {string} output
  * @param {string} red
  * @param {string} green
  * @param {string} blue
@@ -947,15 +974,15 @@ test.Loader.prototype.load = function(url) {
  * @implements {test.Image.EventListener}
  * @constructor
  */
-test.Application = function(image, canvas, red, green, blue, blur) {
+test.Application = function(input, output, red, green, blue, blur) {
   /// <param type="string" name="image"/>
   /// <param type="string" name="canvas"/>
   /// <param type="string" name="red"/>
   /// <param type="string" name="green"/>
   /// <param type="string" name="blue"/>
   /// <param type="string" name="blur"/>
-  this.image_ = new test.Image(image, this);
-  this.canvas_ = new test.Canvas(canvas);
+  this.input_ = new test.Image(input, this);
+  this.output_ = new test.Image(output, this);
   this.red_ = new test.Range(red, this);
   this.green_ = new test.Range(green, this);
   this.blue_ = new test.Range(blue, this);
@@ -974,14 +1001,14 @@ test.Application.prototype.loader_ = null;
  * @type {test.Image}
  * @private
  */
-test.Application.prototype.image_ = null;
+test.Application.prototype.input_ = null;
 
 /**
  * The object that draws a loaded image to a <canvas> element.
- * @type {test.Canvas}
+ * @type {test.Image}
  * @private
  */
-test.Application.prototype.canvas_ = null;
+test.Application.prototype.output_ = null;
 
 /**
  * The red multiplier used by this application to compose loaded images.
@@ -1022,13 +1049,13 @@ test.Application.instance_ = null;
 test.Application.prototype.handleLoadData = function(url, text) {
   /// <param type="string" name="url"/>
   /// <param type="string" name="text"/>
-  this.image_.setSource(text);
+  this.input_.setSource(text);
 };
 
 /** @override */
 test.Application.prototype.handleLoadImage = function(image) {
   /// <param type="test.Image" name="image"/>
-  this.canvas_.drawImage(image, 0, 0);
+  this.output_.setImage(image);
 
   // Enable the range inputs to allow users to change its colors and to blur it.
   this.red_.enable(true);
@@ -1043,20 +1070,20 @@ test.Application.prototype.handleBrowserEvent = function(element, type, event) {
   /// <param type="string" name="type"/>
   /// <param type="Event" name="event"/>
   test.assert(type == 'change');
-  test.assert(this.image_ != null);
+  test.assert(this.output_ != null);
 
   // Calculate a multiplier and applies a color filter and a blur filter to the
   // loaded image.
   var value = element.getValue();
   var result = false;
   if (element.id == 'red') {
-    result = this.image_.setRed(value / 255);
+    result = this.output_.setRed(value / 255);
   } else if (element.id == 'green') {
-    result = this.image_.setGreen(value / 255);
+    result = this.output_.setGreen(value / 255);
   } else if (element.id == 'blue') {
-    result = this.image_.setBlue(value / 255);
+    result = this.output_.setBlue(value / 255);
   } else if (element.id == 'blur') {
-    result = this.image_.setBlur(value);
+    result = this.output_.setBlur(value);
   }
 
   // Disables the range inputs to prevent users from changing them while the
