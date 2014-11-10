@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SVG Test 3</title>
+<script type="text/javascript">
+window.onload = function(event) {
+  // Create an <img> element.
+  var image = document.createElement('img');
+  image.onload = function(event) {
+    // Draw the loaded image to the <canvas> element.
+    var context = document.getElementById('test').getContext('2d');
+    context.drawImage(event.target, 0, 0);
+  };
+  // Load an SVG image to the <img> element. Some browsers need to encode an SVG
+  // image in Base64 to use it as the source of an <img> element.
+  var src =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">' +
+      '<circle cx="40" cy="40" r="40" fill="#000"/>' +
+    '</svg>';
+  image.src = 'data:image/svg+xml;base64,' + btoa(src);
+  image.width = 80;
+  image.height = 80;
+};
+</script>
+</head>
+<body>
+<canvas id="test" width="80" height="80"></canvas>
+</body>
+</html>

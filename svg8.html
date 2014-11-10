@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<script type="text/javascript">
+function applyColorMatrixFilter(data) {
+  // For each input pixel (r_in, g_in, b_in, a_in), calculate an output pixel
+  // (r_out, g_out, b_out, a_out) with the following formulas and over-write the
+  // input pixel with the output one.
+  //   r_out = 0 * r_in + 1 * g_in + 0 * b_in + 0 * a_in + 0
+  //   g_out = 1 * r_in + 0 * g_in + 0 * b_in + 0 * a_in + 0
+  //   b_out = 0 * r_in + 0 * g_in + 1 * b_in + 0 * a_in + 0
+  //   a_out = 0 * r_in + 0 * g_in + 0 * b_in + 1 * a_in + 0
+  for (var i = 0; i < data.length; i += 4) {
+    var red = data[i + 0];
+    var green = data[i + 1];
+    var blue = data[i + 2];
+    var alpha = data[i + 3];
+    data[i + 0] = 0 * red + 1 * green + 0 * blue + 0 * alpha + 0;
+    data[i + 1] = 1 * red + 0 * green + 0 * blue + 0 * alpha + 0;
+    data[i + 2] = 0 * red + 0 * green + 1 * blue + 0 * alpha + 0;
+    data[i + 3] = 0 * red + 0 * green + 0 * blue + 1 * alpha + 0;
+  }
+};
+window.onload = function() {
+  // Create a <canvas> element and draw the content of a sample image.
+  var canvas = document.getElementById('output');
+  var context = canvas.getContext('2d');
+  context.drawImage(document.getElementById('input'), 0, 0);
+  // Apply a color filter to the content of the <canvas> element and draw the
+  // color-filtered image.
+  var data = context.getImageData(0, 0, 32, 32);
+  applyColorMatrixFilter(data.data);
+  context.putImageData(data, 0, 0);
+};
+</script>
+</head>
+<body>
+  <img id="input" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAtJJREFUeNrMV09r1EAUf/nnYduypWARaUEQ2+LJPehR1w8gevWi+wFavBTBm55EQVQUr3a/QUXwJu0qXuph48ltPdhqq6IVtrpsW5PMOJOdZGeymZ1JWqUPHpkMk/d+8/4HQE5lwpg9b7J19Ix4gVtfIvwxca4MCjJBTfcJX2XrRcJz3LrKnXtK+BhkJB0ApzjBvNIaB6ZJeFjybbkfMB0A5wnfUpxxGZgHKdajbqrIPrQUgrfYrekN19ia318lbDBrUJC73Lk1tl/jzh48MpIb6xcmKlzQ7TdVx56vzPEbdsqhpk765KSHyQ0ZAG0aOmIpz+xsIfC2caps83/4GQXZ6oD7D7G4yiBkgYhjhFMlcK4/TpXmOA4Ui0Wptva9CvjLS9D6HgBGACQAjcwuwJvfcl83+Py+IwNlL8WLXQBfcwPA7d+pMlVZ0Je8u9OAGvVwTcueociC4A/O1YyEdMGfPuxHADazWOAd6+8dANutOFqN8RMxasMwwR49JDH/LxIDjaTMvbvAvnxNyIKCJAt89yW0n8wQF+SbB4TOhZnPs2VAo69MlQVEACQT0HIviMCyIRgZ7N5mbAqMwpDoCoxzARAVvXkRck9GUAFcFgzMVsGaOC2kYOApXKpjAb4aUkt4d6bV9X+9oVXiU2OAlEzp9GKSLJCOV+z2ggsCHMls5nYBbre6L4VBcGZuh8UI1V+DNT5CFJ8Be1JUjjY3lJ1QBcBlU21PITJLZ0N2rszCgCQN0c8NrQ5r6lYuVH+lnYK0BoTf+Fg55GgXIu/Rje7tSVCakyWA4yfjnA9WlkjrfRsrV3VBHQC1tNmQWiKyhn/4KFijdtLcMll7s0Cqn398AWRZicLT6YD+DlZ2Qp0gjAOxLxCfKiRu2sWAPCyTo/dfkDKeDbPOeI49hX9A0hCTvl5lwwc1+7ws/7UBpACKfjgvcjFCFT6jT6Iw01D7V4ABALvsF7lgQK5jAAAAAElFTkSuQmCC"/>
+  <canvas id="output" width="32" height="32"></canvas>
+</body>
+</html>

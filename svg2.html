@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SVG Test 2</title>
+<script type="text/javascript">
+window.onload = function (event) {
+  // Create an SVG element. i.e. '<svg xmlns="http://www.w3.org/2000/svg"...>'.
+  // SVG elements must be created with the 'createElementNS()' method (not the
+  // 'createElement()' method) to specify the namespace of SVG.
+  var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', '80');
+  svg.setAttribute('height', '80');
+  // Create a <defs> element and a <radialGradient> element.
+  var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  var gradient =
+      document.createElementNS('http://www.w3.org/2000/svg', 'radialGradient');
+  gradient.setAttribute('id', 'a');
+  gradient.setAttribute('fx', '0');
+  gradient.setAttribute('fy', '0');
+  gradient.setAttribute('cx', '0');
+  gradient.setAttribute('cy', '0');
+  gradient.setAttribute('r', '60');
+  gradient.setAttribute('gradientUnits', 'userSpaceOnUse');
+  var stop0 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop0.setAttribute('offset', '0');
+  stop0.setAttribute('stop-color', 'rgba(255,255,255,1)');
+  gradient.appendChild(stop0);
+  var stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop1.setAttribute('offset', '1');
+  stop1.setAttribute('stop-color', 'rgba(0,0,0,1)');
+  gradient.appendChild(stop1);
+  defs.appendChild(gradient);
+  svg.appendChild(defs);
+  // Create a <circle> element.
+  var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  circle.setAttribute('cx', '40');
+  circle.setAttribute('cy', '40');
+  circle.setAttribute('r', '40');
+  circle.setAttribute('fill', '#000');
+  svg.appendChild(circle);
+  document.body.appendChild(svg);
+};
+</script>
+</head>
+<body>
+</body>
+</html>
