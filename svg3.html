@@ -1,0 +1,54 @@
+<!-- 
+
+The MIT License (MIT)  
+Copyright (c) 2014 DeNA Co., Ltd.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>SVG Test 3</title>
+<script type="text/javascript">
+window.onload = function(event) {
+  // Create an <img> element.
+  var image = document.createElement('img');
+  image.onload = function(event) {
+    // Draw the loaded image to the <canvas> element.
+    var context = document.getElementById('test').getContext('2d');
+    context.drawImage(event.target, 0, 0);
+  };
+  // Load an SVG image to the <img> element. Some browsers need to encode an SVG
+  // image in Base64 to use it as the source of an <img> element.
+  var src =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">' +
+      '<circle cx="40" cy="40" r="40" fill="#000"/>' +
+    '</svg>';
+  image.src = 'data:image/svg+xml;base64,' + btoa(src);
+  image.width = 80;
+  image.height = 80;
+};
+</script>
+</head>
+<body>
+<canvas id="test" width="80" height="80"></canvas>
+</body>
+</html>
